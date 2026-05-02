@@ -1,0 +1,49 @@
+@model EmployeeManagementSystem.Models.Employee
+
+@{
+    ViewBag.Title = "Add Employee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fa fa-user-plus"></i> Add New Employee</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Create", "Employee", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                        @Html.Partial("_EmployeeForm")
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-success">Save Employee</button>
+                            @Html.ActionLink("Cancel", "Index", "Employee", null, new { @class = "btn btn-secondary ml-2" })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $('#DepartmentId').on('change', function () {
+            var deptId = $(this).val();
+            $('#DesignationId').empty().append('<option value="">-- Select Designation --</option>');
+            if (deptId) {
+                $.getJSON('@Url.Action("GetDesignations", "Employee")', { departmentId: deptId }, function (data) {
+                    $.each(data, function (i, item) {
+                        $('#DesignationId').append('<option value="' + item.DesignationId + '">' + item.DesignationName + '</option>');
+                    });
+                });
+            }
+        });
+    </script>
+}
